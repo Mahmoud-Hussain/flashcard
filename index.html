@@ -302,10 +302,10 @@
 <div class="panel-wrapper">
   <div id="promptContainer">
     <label id="promptLabel" for="promptText">
-      Copy the prompt below and use it when providing any content file:
+      Copy the prompt below and use it on chatgpt with your file:
     </label>
     <textarea id="promptText" readonly>
-I’m uploading a PowerPoint (.pptx). Please convert it into a JSON object matching the flashcards schema used by my HTML
+I’m uploading a file. Please convert it into a JSON object matching the flashcards schema used by my HTML
 
 - **Section grouping**: Any slide whose title is formatted as a section heading (e.g. “Fundamentals of X”) becomes a top-level key.
 - **Cards**: For all slides that follow under each section:
@@ -331,7 +331,7 @@ Example structure:
   </div>
   <div id="jsonContainer">
     <label id="jsonLabel" for="jsonText">
-      Paste your flashcards JSON below:
+      Paste your flashcards JSON code from chatgpt below:
     </label>
     <textarea id="jsonText" placeholder="Paste JSON here..."></textarea>
     <button id="loadJsonBtn">Load Flashcards</button>
