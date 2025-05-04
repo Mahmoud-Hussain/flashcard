@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Flashcards Viewer</title>
+  <style>
+    :root {
+      --primary: #4CAF50;
+      --primary-dark: #388E3C;
+      --accent: #FF5722;
+      --bg: #F0F2F5;
+      --card-bg: #FFFFFF;
+      --answer-bg: #E8F5E9;
+      --text: #2E3A46;
+      --shadow: rgba(0,0,0,0.15);
+      --font-sans: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    *, *::before, *::after {
+      box-sizing: border-box;
+      transition: all .2s ease-in-out;
+    }
+    body {
+      margin:0; padding:0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-sans);
+      line-height: 1.6;
+    }
+    header {
+      background: var(--primary);
+      color: #fff;
+      padding: 1.25rem;
+      text-align: center;
+      box-shadow: 0 2px 6px var(--shadow);
+    }
+    button {
+      font-family: var(--font-sans);
+      font-size: 1rem;
+      padding: .6rem 1.2rem;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      box-shadow: 0 2px 4px var(--shadow);
+    }
+    button:hover { filter: brightness(1.1); }
+
+    /* FLEX WRAPPERS */
+    .panel-wrapper {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      justify-content: center;
+      align-items: flex-start;
+      margin: 1rem;
+    }
+    .controls-wrapper {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      justify-content: center;
+      margin: 1rem;
+    }
+    .search-wrapper {
+      display: flex;
+      gap: .5rem;
+      justify-content: center;
+      margin: 1rem;
+    }
+
+    /* PROMPT & JSON BOXES */
+    #promptContainer,
+    #jsonContainer {
+      background: var(--card-bg);
+      padding: 1rem;
+      border: 1px solid var(--primary-dark);
+      border-radius: 8px;
+      flex: 1 1 400px;
+      max-width: 600px;
+    }
+    #promptLabel,
+    #jsonLabel {
+      font-weight: bold;
+      margin-bottom: .5rem;
+      display: block;
+    }
+    #promptText,
+    #jsonText {
+      width: 100%;
+      height: 200px;
+      padding: .5rem;
+      font-family: monospace;
+      font-size: .9rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      resize: vertical;
+    }
+    #copyPromptBtn,
+    #loadJsonBtn {
+      margin-top: .5rem;
+      background: var(--accent);
+      color: #fff;
+    }
+    #copyPromptBtn:hover,
+    #loadJsonBtn:hover {
+      background: #E64A19;
+    }
+
+    /* CONTROLS & MODE SWITCH */
+    #controls {
+      flex: 1;
+      text-align: center;
+    }
+    #controls button,
+    #controls select {
+      margin: 0 .5rem;
+      background: #fff;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      padding: .6rem 1.2rem;
+    }
+    #controls button:hover,
+    #controls select:hover {
+      background: #f0f0f0;
+    }
+    #modeSwitch {
+      flex: 1;
+      text-align: center;
+    }
+    #modeSwitch button {
+      margin: 0 .5rem;
+      background: var(--accent);
+      color: #fff;
+    }
+
+    /* GROUPED VIEW */
+    .section {
+      margin-bottom: 2rem;
+    }
+    .section h2 {
+      margin-bottom: .5rem;
+      padding-bottom: .25rem;
+      border-bottom: 2px solid var(--primary);
+    }
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 1rem;
+    }
+
+    /* RANDOM VIEW */
+    #randomMode {
+      text-align: center;
+      padding: 1rem;
+    }
+    /* DROPDOWN */
+    #sectionSelect {
+      appearance: none;
+      -webkit-appearance: none;
+      width: 100%;
+      max-width: 300px;
+      padding: .6rem 2.5rem .6rem 1rem;
+      margin: .5rem auto 1rem;
+      font-size: 1rem;
+      color: #fff;
+      background: var(--primary-dark)
+        url("data:image/svg+xml,%3Csvg width='12' height='12' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill='%23fff' d='M5 7l5 5 5-5H5z'/%3E%3C/svg%3E")
+        no-repeat right 1rem center;
+      background-size: 12px;
+      border-radius: 6px;
+      box-shadow: 0 2px 6px var(--shadow);
+      cursor: pointer;
+    }
+    #sectionSelect:focus {
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(76,175,80,0.4);
+    }
+
+    /* CARDS (Grouped + Random) */
+    .card,
+    #randomCard {
+      border-radius: 12px;
+      box-shadow: 0 4px 12px var(--shadow);
+      background: var(--card-bg);
+      transition: transform .2s ease-in-out;
+      position: relative;
+      perspective: 1000px;
+      min-height: 200px;
+      padding: 1rem;
+      cursor: pointer;
+    }
+    .card:hover,
+    #randomCard:hover {
+      transform: scale(1.02);
+    }
+    .card-inner,
+    .random-inner {
+      position: absolute;
+      inset: 0;
+      transition: transform .6s;
+      transform-style: preserve-3d;
+      border-radius: 12px;
+    }
+    .card.flipped .card-inner,
+    .random-inner.flipped {
+      transform: rotateY(180deg);
+    }
+    .card-front,
+    .card-back,
+    .face {
+      position: absolute;
+      inset: 0;
+      padding: 1rem;
+      backface-visibility: hidden;
+      overflow-y: auto;
+      word-wrap: break-word;
+      white-space: normal;
+      border-radius: 12px;
+    }
+    .card-back,
+    .face.back {
+      background: var(--answer-bg);
+      transform: rotateY(180deg);
+    }
+    /* custom scrollbars */
+    .card-front::-webkit-scrollbar,
+    .card-back::-webkit-scrollbar,
+    .face::-webkit-scrollbar {
+      width: 6px;
+    }
+    .card-front::-webkit-scrollbar-thumb,
+    .card-back::-webkit-scrollbar-thumb,
+    .face::-webkit-scrollbar-thumb {
+      background: var(--primary-dark);
+      border-radius: 3px;
+    }
+    #cardContainer {
+      max-width: 400px;
+      margin: 1rem auto;
+      perspective: 1000px;
+    }
+    #randomControls {
+      margin: 1rem auto;
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+    }
+  </style>
+</head>
+<body>
+  <header><h1>Flashcards Viewer</h1></header>
+
+  <div class="panel-wrapper">
+    <div id="promptContainer">
+      <label id="promptLabel" for="promptText">
+        Copy the prompt below and use it when providing any content file:
+      </label>
+      <textarea id="promptText" readonly>
+I’m uploading a PowerPoint (.pptx). Please convert it into a JSON object matching the flashcards schema used by my HTML
+
+- **Section grouping**: Any slide whose title is formatted as a section heading (e.g. “Fundamentals of X”) becomes a top-level key.
+- **Cards**: For all slides that follow under each section:
+- Use the slide’s title as the `"q"` (question).
+- Use its main body text (bullets or paragraph) as the `"a"` (answer).
+- Stop grouping when you encounter the next section-heading slide.
+- **Output** only the JSON, nothing else.
+
+Example structure:
+
+```json
+{
+  "Section Title 1": [
+    { "q": "Slide Title A", "a": "Slide A content…" },
+    { "q": "Slide Title B", "a": "Slide B content…" }
+  ],
+  "Section Title 2": [
+    { "q": "Slide Title C", "a": "Slide C content…" }
+  ]
+}
+        
+      </textarea>
+      <button id="copyPromptBtn">Copy Prompt</button>
+    </div>
+
+    <div id="jsonContainer">
+      <label id="jsonLabel" for="jsonText">
+        Paste your flashcards JSON below:
+      </label>
+      <textarea id="jsonText" placeholder="Paste JSON here..."></textarea>
+      <button id="loadJsonBtn">Load Flashcards</button>
+    </div>
+  </div>
+  <div class="controls-wrapper">
+    <div id="controls">
+      <button id="btnPickFolder">Choose Folder…</button>
+      <input type="file" id="folderInput" webkitdirectory directory multiple hidden/>
+      <select id="fileSelect" hidden></select>
+    </div>
+    <div id="modeSwitch">
+      <button id="showGrouped">Grouped View</button>
+      <button id="showRandom">Random View</button>
+    </div>
+  </div>
+  <div class="search-wrapper">
+    <input type="text" id="search" placeholder="Search…" />
+    <button id="reset">Reset</button>
+  </div>
+
+  <div id="groupedMode">
+    <div id="groupedContainer"></div>
+  </div>
+  <div id="randomMode" hidden>
+    <select id="sectionSelect"></select>
+    <div id="cardContainer">
+      <div id="randomCard" class="card">
+        <div class="random-inner" id="randomInner">
+          <div class="face front" id="randFront"></div>
+          <div class="face back" id="randBack"></div>
+        </div>
+      </div>
+    </div>
+    <div id="randomControls">
+      <button id="prevBtn">Previous</button>
+      <button id="nextBtn">Next</button>
+      <button id="shuffleBtn">Shuffle</button>
+    </div>
+  </div>
+  <script>
+    const folderInput   = document.getElementById('folderInput');
+    const btnPickFolder = document.getElementById('btnPickFolder');
+    const fileSelect    = document.getElementById('fileSelect');
+    const jsonText      = document.getElementById('jsonText');
+    const loadJsonBtn   = document.getElementById('loadJsonBtn');
+    const copyPromptBtn = document.getElementById('copyPromptBtn');
+    const promptText    = document.getElementById('promptText');
+    const groupedMode   = document.getElementById('groupedMode');
+    const randomMode    = document.getElementById('randomMode');
+    const searchInput   = document.getElementById('search');
+    const resetBtn      = document.getElementById('reset');
+    let fileMap = new Map(), cards = [], idx = 0;
+
+    // Folder picker
+    btnPickFolder.onclick = () => folderInput.click();
+    folderInput.onchange = e => {
+      fileMap.clear(); fileSelect.innerHTML = '';
+      Array.from(e.target.files)
+        .filter(f => f.name.toLowerCase().endsWith('.json'))
+        .forEach(f => {
+          fileMap.set(f.name, f);
+          const opt = document.createElement('option');
+          opt.value = f.name; opt.textContent = f.name;
+          fileSelect.appendChild(opt);
+        });
+      fileSelect.hidden = !fileMap.size;
+      if (fileMap.size) loadDataFile(fileSelect.value);
+    };
+    fileSelect.onchange = () => loadDataFile(fileSelect.value);
+
+    async function loadDataFile(name) {
+      const text = await fileMap.get(name).text();
+      const obj  = JSON.parse(text);
+      const secs = Object.entries(obj).map(([t,c])=>({title:t,cards:c}));
+      initGrouped(secs);
+      initRandom(secs);
+    }
+
+    // Paste-JSON loader
+    loadJsonBtn.onclick = () => {
+      try {
+        const obj = JSON.parse(jsonText.value);
+        const secs= Object.entries(obj).map(([t,c])=>({title:t,cards:c}));
+        initGrouped(secs);
+        initRandom(secs);
+      } catch {
+        alert('Invalid JSON. Please check your input.');
+      }
+    };
+
+    // Grouped view
+    function renderGrouped(secs) {
+      const container = document.getElementById('groupedContainer');
+      container.innerHTML = '';
+      secs.forEach(sec => {
+        if (!sec.cards.length) return;
+        const sDiv = document.createElement('div');
+        sDiv.className = 'section';
+        const h2 = document.createElement('h2');
+        h2.textContent = sec.title;
+        sDiv.appendChild(h2);
+        const grid = document.createElement('div');
+        grid.className = 'card-grid';
+        sec.cards.forEach(({q,a})=> {
+          const card = document.createElement('div');
+          card.className = 'card';
+          const inner = document.createElement('div');
+          inner.className = 'card-inner';
+          const front = document.createElement('div');
+          front.className = 'card-front'; front.textContent = q;
+          const back  = document.createElement('div');
+          back.className = 'card-back';  back.textContent = a;
+          inner.append(front, back);
+          card.append(inner);
+          card.onclick = () => card.classList.toggle('flipped');
+          grid.appendChild(card);
+        });
+        sDiv.appendChild(grid);
+        container.appendChild(sDiv);
+      });
+    }
+    function initGrouped(secs) {
+      renderGrouped(secs);
+      searchInput.oninput = e => {
+        const term = e.target.value.toLowerCase();
+        renderGrouped(secs.map(s=>({
+          title: s.title,
+          cards: s.cards.filter(c=>
+            c.q.toLowerCase().includes(term) ||
+            c.a.toLowerCase().includes(term)
+          )
+        })));
+      };
+      resetBtn.onclick = () => renderGrouped(secs);
+    }
+    // Random view
+    function shuffle(arr) {
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random()*(i+1));
+        [arr[i],arr[j]] = [arr[j],arr[i]];
+      }
+      return arr;
+    }
+    function populateRandom(secs) {
+      const sel = document.getElementById('sectionSelect');
+      sel.innerHTML = '';
+      secs.forEach((s,i)=>{
+        const o = document.createElement('option');
+        o.value = i; o.textContent = s.title;
+        sel.appendChild(o);
+      });
+    }
+    function showRandom() {
+      document.getElementById('randFront').textContent = cards[idx].q;
+      document.getElementById('randBack').textContent  = cards[idx].a;
+      document.getElementById('randomInner').classList.remove('flipped');
+    }
+    function loadRandom(secs,i) {
+      cards = shuffle([...secs[i].cards]);
+      idx = 0; showRandom();
+    }
+    function initRandom(secs) {
+      populateRandom(secs);
+      document.getElementById('sectionSelect').onchange =
+        e => loadRandom(secs, e.target.value);
+      document.getElementById('randomCard').onclick =
+        () => document.getElementById('randomInner').classList.toggle('flipped');
+      document.getElementById('prevBtn').onclick    = ()=>{ if(idx>0) idx--, showRandom(); };
+      document.getElementById('nextBtn').onclick    = ()=>{ if(idx<cards.length-1) idx++, showRandom(); };
+      document.getElementById('shuffleBtn').onclick = ()=> loadRandom(secs, document.getElementById('sectionSelect').value);
+      loadRandom(secs,0);
+    }
+
+    // View switching
+    document.getElementById('showGrouped').onclick = ()=>{
+      groupedMode.hidden = false;
+      randomMode.hidden  = true;
+    };
+    document.getElementById('showRandom').onclick = ()=>{
+      groupedMode.hidden = true;
+      randomMode.hidden  = false;
+    };
+
+    // Copy-prompt
+    copyPromptBtn.onclick = ()=>{
+      navigator.clipboard.writeText(promptText.value)
+        .then(()=> copyPromptBtn.textContent = 'Copied!');
+    };
+  </script>
+</body>
+</html>
