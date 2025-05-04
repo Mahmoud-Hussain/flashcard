@@ -1,3 +1,4 @@
+<!-- Chunk 1/8 -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -21,7 +22,7 @@
       transition: all .2s ease-in-out;
     }
     body {
-      margin:0; padding:0;
+      margin: 0; padding: 0;
       background: var(--bg);
       color: var(--text);
       font-family: var(--font-sans);
@@ -44,7 +45,7 @@
       box-shadow: 0 2px 4px var(--shadow);
     }
     button:hover { filter: brightness(1.1); }
-
+/* Chunk 2/8 (continued CSS) */
     /* FLEX WRAPPERS */
     .panel-wrapper {
       display: flex;
@@ -105,7 +106,7 @@
     #loadJsonBtn:hover {
       background: #E64A19;
     }
-
+/* Chunk 3/8 (rest of CSS + media query) */
     /* CONTROLS & MODE SWITCH */
     #controls {
       flex: 1;
@@ -245,17 +246,65 @@
       gap: 1rem;
       justify-content: center;
     }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .panel-wrapper {
+        flex-direction: column;
+      }
+      #promptContainer,
+      #jsonContainer {
+        max-width: 100%;
+        flex: 1 1 auto;
+      }
+      #promptText,
+      #jsonText {
+        height: 150px;
+      }
+      .controls-wrapper {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      #controls,
+      #modeSwitch {
+        width: 100%;
+      }
+      #search {
+        width: calc(100% - 80px);
+      }
+      #reset {
+        width: 100px;
+      }
+      .card-grid {
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      }
+      #sectionSelect {
+        max-width: 100%;
+      }
+      #cardContainer {
+        max-width: 100%;
+      }
+      #randomControls {
+        flex-direction: column;
+      }
+      .controls-wrapper button,
+      #controls select,
+      #modeSwitch button {
+        width: 100%;
+      }
+    }
   </style>
+<!-- Chunk 4/8 -->
 </head>
 <body>
   <header><h1>Flashcards Viewer</h1></header>
-
-  <div class="panel-wrapper">
-    <div id="promptContainer">
-      <label id="promptLabel" for="promptText">
-        Copy the prompt below and use it when providing any content file:
-      </label>
-      <textarea id="promptText" readonly>
+<!-- Chunk 5/8 -->
+<div class="panel-wrapper">
+  <div id="promptContainer">
+    <label id="promptLabel" for="promptText">
+      Copy the prompt below and use it when providing any content file:
+    </label>
+    <textarea id="promptText" readonly>
 I’m uploading a PowerPoint (.pptx). Please convert it into a JSON object matching the flashcards schema used by my HTML
 
 - **Section grouping**: Any slide whose title is formatted as a section heading (e.g. “Fundamentals of X”) becomes a top-level key.
@@ -269,211 +318,211 @@ Example structure:
 
 ```json
 {
-  "Section Title 1": [
-    { "q": "Slide Title A", "a": "Slide A content…" },
-    { "q": "Slide Title B", "a": "Slide B content…" }
-  ],
-  "Section Title 2": [
-    { "q": "Slide Title C", "a": "Slide C content…" }
-  ]
+"Section Title 1": [
+  { "q": "Slide Title A", "a": "Slide A content…" },
+  { "q": "Slide Title B", "a": "Slide B content…" }
+],
+"Section Title 2": [
+  { "q": "Slide Title C", "a": "Slide C content…" }
+]
 }
-        
-      </textarea>
-      <button id="copyPromptBtn">Copy Prompt</button>
-    </div>
-
-    <div id="jsonContainer">
-      <label id="jsonLabel" for="jsonText">
-        Paste your flashcards JSON below:
-      </label>
-      <textarea id="jsonText" placeholder="Paste JSON here..."></textarea>
-      <button id="loadJsonBtn">Load Flashcards</button>
-    </div>
+    </textarea>
+    <button id="copyPromptBtn">Copy Prompt</button>
   </div>
-  <div class="controls-wrapper">
-    <div id="controls">
-      <button id="btnPickFolder">Choose Folder…</button>
-      <input type="file" id="folderInput" webkitdirectory directory multiple hidden/>
-      <select id="fileSelect" hidden></select>
-    </div>
-    <div id="modeSwitch">
-      <button id="showGrouped">Grouped View</button>
-      <button id="showRandom">Random View</button>
-    </div>
+  <div id="jsonContainer">
+    <label id="jsonLabel" for="jsonText">
+      Paste your flashcards JSON below:
+    </label>
+    <textarea id="jsonText" placeholder="Paste JSON here..."></textarea>
+    <button id="loadJsonBtn">Load Flashcards</button>
   </div>
-  <div class="search-wrapper">
-    <input type="text" id="search" placeholder="Search…" />
-    <button id="reset">Reset</button>
+</div>
+<!-- Chunk 6/8 -->
+<div class="controls-wrapper">
+  <div id="controls">
+    <button id="btnPickFolder">Choose Folder…</button>
+    <input type="file" id="folderInput" webkitdirectory directory multiple hidden/>
+    <select id="fileSelect" hidden></select>
   </div>
-
-  <div id="groupedMode">
-    <div id="groupedContainer"></div>
+  <div id="modeSwitch">
+    <button id="showGrouped">Grouped View</button>
+    <button id="showRandom">Random View</button>
   </div>
-  <div id="randomMode" hidden>
-    <select id="sectionSelect"></select>
-    <div id="cardContainer">
-      <div id="randomCard" class="card">
-        <div class="random-inner" id="randomInner">
-          <div class="face front" id="randFront"></div>
-          <div class="face back" id="randBack"></div>
-        </div>
+</div>
+<div class="search-wrapper">
+  <input type="text" id="search" placeholder="Search…" />
+  <button id="reset">Reset</button>
+</div>
+<!-- Chunk 7/8 -->
+<div id="groupedMode">
+  <div id="groupedContainer"></div>
+</div>
+<div id="randomMode" hidden>
+  <select id="sectionSelect"></select>
+  <div id="cardContainer">
+    <div id="randomCard" class="card">
+      <div class="random-inner" id="randomInner">
+        <div class="face front" id="randFront"></div>
+        <div class="face back" id="randBack"></div>
       </div>
     </div>
-    <div id="randomControls">
-      <button id="prevBtn">Previous</button>
-      <button id="nextBtn">Next</button>
-      <button id="shuffleBtn">Shuffle</button>
-    </div>
   </div>
-  <script>
-    const folderInput   = document.getElementById('folderInput');
-    const btnPickFolder = document.getElementById('btnPickFolder');
-    const fileSelect    = document.getElementById('fileSelect');
-    const jsonText      = document.getElementById('jsonText');
-    const loadJsonBtn   = document.getElementById('loadJsonBtn');
-    const copyPromptBtn = document.getElementById('copyPromptBtn');
-    const promptText    = document.getElementById('promptText');
-    const groupedMode   = document.getElementById('groupedMode');
-    const randomMode    = document.getElementById('randomMode');
-    const searchInput   = document.getElementById('search');
-    const resetBtn      = document.getElementById('reset');
-    let fileMap = new Map(), cards = [], idx = 0;
+  <div id="randomControls">
+    <button id="prevBtn">Previous</button>
+    <button id="nextBtn">Next</button>
+    <button id="shuffleBtn">Shuffle</button>
+  </div>
+</div>
+<!-- Chunk 8/8 -->
+<script>
+  const folderInput   = document.getElementById('folderInput');
+  const btnPickFolder = document.getElementById('btnPickFolder');
+  const fileSelect    = document.getElementById('fileSelect');
+  const jsonText      = document.getElementById('jsonText');
+  const loadJsonBtn   = document.getElementById('loadJsonBtn');
+  const copyPromptBtn = document.getElementById('copyPromptBtn');
+  const promptText    = document.getElementById('promptText');
+  const groupedMode   = document.getElementById('groupedMode');
+  const randomMode    = document.getElementById('randomMode');
+  const searchInput   = document.getElementById('search');
+  const resetBtn      = document.getElementById('reset');
+  let fileMap = new Map(), cards = [], idx = 0;
 
-    // Folder picker
-    btnPickFolder.onclick = () => folderInput.click();
-    folderInput.onchange = e => {
-      fileMap.clear(); fileSelect.innerHTML = '';
-      Array.from(e.target.files)
-        .filter(f => f.name.toLowerCase().endsWith('.json'))
-        .forEach(f => {
-          fileMap.set(f.name, f);
-          const opt = document.createElement('option');
-          opt.value = f.name; opt.textContent = f.name;
-          fileSelect.appendChild(opt);
-        });
-      fileSelect.hidden = !fileMap.size;
-      if (fileMap.size) loadDataFile(fileSelect.value);
-    };
-    fileSelect.onchange = () => loadDataFile(fileSelect.value);
+  // Folder picker
+  btnPickFolder.onclick = () => folderInput.click();
+  folderInput.onchange = e => {
+    fileMap.clear(); fileSelect.innerHTML = '';
+    Array.from(e.target.files)
+      .filter(f => f.name.toLowerCase().endsWith('.json'))
+      .forEach(f => {
+        fileMap.set(f.name, f);
+        const opt = document.createElement('option');
+        opt.value = f.name; opt.textContent = f.name;
+        fileSelect.appendChild(opt);
+      });
+    fileSelect.hidden = !fileMap.size;
+    if (fileMap.size) loadDataFile(fileSelect.value);
+  };
+  fileSelect.onchange = () => loadDataFile(fileSelect.value);
 
-    async function loadDataFile(name) {
-      const text = await fileMap.get(name).text();
-      const obj  = JSON.parse(text);
-      const secs = Object.entries(obj).map(([t,c])=>({title:t,cards:c}));
+  async function loadDataFile(name) {
+    const text = await fileMap.get(name).text();
+    const obj  = JSON.parse(text);
+    const secs = Object.entries(obj).map(([t,c])=>({title:t,cards:c}));
+    initGrouped(secs);
+    initRandom(secs);
+  }
+
+  // Paste-JSON loader
+  loadJsonBtn.onclick = () => {
+    try {
+      const obj = JSON.parse(jsonText.value);
+      const secs= Object.entries(obj).map(([t,c])=>({title:t,cards:c}));
       initGrouped(secs);
       initRandom(secs);
+    } catch {
+      alert('Invalid JSON. Please check your input.');
     }
+  };
 
-    // Paste-JSON loader
-    loadJsonBtn.onclick = () => {
-      try {
-        const obj = JSON.parse(jsonText.value);
-        const secs= Object.entries(obj).map(([t,c])=>({title:t,cards:c}));
-        initGrouped(secs);
-        initRandom(secs);
-      } catch {
-        alert('Invalid JSON. Please check your input.');
-      }
-    };
-
-    // Grouped view
-    function renderGrouped(secs) {
-      const container = document.getElementById('groupedContainer');
-      container.innerHTML = '';
-      secs.forEach(sec => {
-        if (!sec.cards.length) return;
-        const sDiv = document.createElement('div');
-        sDiv.className = 'section';
-        const h2 = document.createElement('h2');
-        h2.textContent = sec.title;
-        sDiv.appendChild(h2);
-        const grid = document.createElement('div');
-        grid.className = 'card-grid';
-        sec.cards.forEach(({q,a})=> {
-          const card = document.createElement('div');
-          card.className = 'card';
-          const inner = document.createElement('div');
-          inner.className = 'card-inner';
-          const front = document.createElement('div');
-          front.className = 'card-front'; front.textContent = q;
-          const back  = document.createElement('div');
-          back.className = 'card-back';  back.textContent = a;
-          inner.append(front, back);
-          card.append(inner);
-          card.onclick = () => card.classList.toggle('flipped');
-          grid.appendChild(card);
-        });
-        sDiv.appendChild(grid);
-        container.appendChild(sDiv);
+  // Grouped view
+  function renderGrouped(secs) {
+    const container = document.getElementById('groupedContainer');
+    container.innerHTML = '';
+    secs.forEach(sec => {
+      if (!sec.cards.length) return;
+      const sDiv = document.createElement('div');
+      sDiv.className = 'section';
+      const h2 = document.createElement('h2');
+      h2.textContent = sec.title;
+      sDiv.appendChild(h2);
+      const grid = document.createElement('div');
+      grid.className = 'card-grid';
+      sec.cards.forEach(({q,a})=> {
+        const card = document.createElement('div');
+        card.className = 'card';
+        const inner = document.createElement('div');
+        inner.className = 'card-inner';
+        const front = document.createElement('div');
+        front.className = 'card-front'; front.textContent = q;
+        const back  = document.createElement('div');
+        back.className = 'card-back';  back.textContent = a;
+        inner.append(front, back);
+        card.append(inner);
+        card.onclick = () => card.classList.toggle('flipped');
+        grid.appendChild(card);
       });
+      sDiv.appendChild(grid);
+      container.appendChild(sDiv);
+    });
+  }
+  function initGrouped(secs) {
+    renderGrouped(secs);
+    searchInput.oninput = e => {
+      const term = e.target.value.toLowerCase();
+      renderGrouped(secs.map(s=>({
+        title: s.title,
+        cards: s.cards.filter(c=>
+          c.q.toLowerCase().includes(term) ||
+          c.a.toLowerCase().includes(term)
+        )
+      })));
+    };
+    resetBtn.onclick = () => renderGrouped(secs);
+  }
+  // Random view
+  function shuffle(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random()*(i+1));
+      [arr[i],arr[j]] = [arr[j],arr[i]];
     }
-    function initGrouped(secs) {
-      renderGrouped(secs);
-      searchInput.oninput = e => {
-        const term = e.target.value.toLowerCase();
-        renderGrouped(secs.map(s=>({
-          title: s.title,
-          cards: s.cards.filter(c=>
-            c.q.toLowerCase().includes(term) ||
-            c.a.toLowerCase().includes(term)
-          )
-        })));
-      };
-      resetBtn.onclick = () => renderGrouped(secs);
-    }
-    // Random view
-    function shuffle(arr) {
-      for (let i = arr.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random()*(i+1));
-        [arr[i],arr[j]] = [arr[j],arr[i]];
-      }
-      return arr;
-    }
-    function populateRandom(secs) {
-      const sel = document.getElementById('sectionSelect');
-      sel.innerHTML = '';
-      secs.forEach((s,i)=>{
-        const o = document.createElement('option');
-        o.value = i; o.textContent = s.title;
-        sel.appendChild(o);
-      });
-    }
-    function showRandom() {
-      document.getElementById('randFront').textContent = cards[idx].q;
-      document.getElementById('randBack').textContent  = cards[idx].a;
-      document.getElementById('randomInner').classList.remove('flipped');
-    }
-    function loadRandom(secs,i) {
-      cards = shuffle([...secs[i].cards]);
-      idx = 0; showRandom();
-    }
-    function initRandom(secs) {
-      populateRandom(secs);
-      document.getElementById('sectionSelect').onchange =
-        e => loadRandom(secs, e.target.value);
-      document.getElementById('randomCard').onclick =
-        () => document.getElementById('randomInner').classList.toggle('flipped');
-      document.getElementById('prevBtn').onclick    = ()=>{ if(idx>0) idx--, showRandom(); };
-      document.getElementById('nextBtn').onclick    = ()=>{ if(idx<cards.length-1) idx++, showRandom(); };
-      document.getElementById('shuffleBtn').onclick = ()=> loadRandom(secs, document.getElementById('sectionSelect').value);
-      loadRandom(secs,0);
-    }
+    return arr;
+  }
+  function populateRandom(secs) {
+    const sel = document.getElementById('sectionSelect');
+    sel.innerHTML = '';
+    secs.forEach((s,i)=> {
+      const o = document.createElement('option');
+      o.value = i; o.textContent = s.title;
+      sel.appendChild(o);
+    });
+  }
+  function showRandom() {
+    document.getElementById('randFront').textContent = cards[idx].q;
+    document.getElementById('randBack').textContent  = cards[idx].a;
+    document.getElementById('randomInner').classList.remove('flipped');
+  }
+  function loadRandom(secs,i) {
+    cards = shuffle([...secs[i].cards]);
+    idx = 0; showRandom();
+  }
+  function initRandom(secs) {
+    populateRandom(secs);
+    document.getElementById('sectionSelect').onchange =
+      e => loadRandom(secs, e.target.value);
+    document.getElementById('randomCard').onclick =
+      () => document.getElementById('randomInner').classList.toggle('flipped');
+    document.getElementById('prevBtn').onclick    = ()=>{ if(idx>0) idx--, showRandom(); };
+    document.getElementById('nextBtn').onclick    = ()=>{ if(idx<cards.length-1) idx++, showRandom(); };
+    document.getElementById('shuffleBtn').onclick = ()=> loadRandom(secs, document.getElementById('sectionSelect').value);
+    loadRandom(secs,0);
+  }
 
-    // View switching
-    document.getElementById('showGrouped').onclick = ()=>{
-      groupedMode.hidden = false;
-      randomMode.hidden  = true;
-    };
-    document.getElementById('showRandom').onclick = ()=>{
-      groupedMode.hidden = true;
-      randomMode.hidden  = false;
-    };
+  // View switching
+  document.getElementById('showGrouped').onclick = ()=> {
+    groupedMode.hidden = false;
+    randomMode.hidden  = true;
+  };
+  document.getElementById('showRandom').onclick = ()=> {
+    groupedMode.hidden = true;
+    randomMode.hidden  = false;
+  };
 
-    // Copy-prompt
-    copyPromptBtn.onclick = ()=>{
-      navigator.clipboard.writeText(promptText.value)
-        .then(()=> copyPromptBtn.textContent = 'Copied!');
-    };
-  </script>
+  // Copy-prompt
+  copyPromptBtn.onclick = ()=> {
+    navigator.clipboard.writeText(promptText.value)
+      .then(()=> copyPromptBtn.textContent = 'Copied!');
+  };
+</script>
 </body>
 </html>
