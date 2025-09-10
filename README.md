@@ -7,7 +7,7 @@
 
 ---
 
-## 🎮 How to Use
+##  How to Use
 
 1. Type a **Question** and **Answer** in the provided fields.
 2. Click **Add** to create the flashcard — it appears in the list.
